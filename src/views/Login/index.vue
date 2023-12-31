@@ -10,8 +10,8 @@
             <el-form :model="ruleForm" status-icon :rules="rules" ref="loginForm" class="login-form" size="large">
 
                 <el-form-item prop="username" class="item-from">
-                    <label>邮箱</label>
-                    <el-input type="text" v-model="ruleForm.username" autocomplete="off"></el-input>
+                    <label for="username">邮箱</label>
+                    <el-input id="username" type="text" v-model="ruleForm.username" autocomplete="off"></el-input>
                 </el-form-item>
 
                 <el-form-item prop="password" class="item-from">
@@ -33,13 +33,13 @@
                             <el-input v-model="ruleForm.code" minlength="6" maxlength="6"></el-input>
                         </el-col>
                         <el-col :span="9">
-                            <el-button type="success" class="block">获取验证码</el-button>
+                            <el-button type="success" class="block" @click="GetSms()">获取验证码</el-button>
                         </el-col>
                     </el-row>
                 </el-form-item>
 
                 <el-form-item>
-                    <el-button type="danger" @click="submitForm('loginForm')" class="login-btn block">提交</el-button>
+                    <el-button type="danger" @click="submitForm('loginForm')" class="login-btn block" :disabled="loginButtonStatus">{{ modelValue === 'login' ?"提交":"注册" }}</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -47,11 +47,15 @@
 </template>
 
 <script>
-import {reactive,ref,onMounted} from 'vue';
+
+ import {getSms} from "@/api/login";
+ import { ElMessage } from "element-plus";
+import {reactive,ref,isRef,toRefs,onMounted} from 'vue';
 import { stripscript, validateEmail, validatePass, validateVCode } from '@/utils/validate';
 export default {
     name: 'login',
     setup(props,context){
+        console.log(context);
     // setup(props,{attrs }){
         // 验证用户名
         let validateUsername = (rule, value, callback) => {
@@ -112,12 +116,14 @@ export default {
             { txt: '登录', current: true, type: 'login' },
             { txt: '注册', current: false, type: 'register' }
         ]);
-        const loginForm = ref(null);
+        const loginForm = ref();
         // 模块值 
         const modelValue= ref('login');
+        //登录按键禁用状态
+        const loginButtonStatus = ref(true);
         // 表单绑定数据
         const ruleForm = reactive({
-            username: '',
+            username: 'xiangqi_007@163.com',
             password: '',
             repassword: '',
             code: ''
@@ -155,8 +161,33 @@ export default {
             data.current = true;
             // 修改模块值
             modelValue.value = data.type;
+
+            // 重置表单
+            resetForm(loginForm);
         });
 
+        /**
+         * 获取验证码
+         */
+        const GetSms=(()=>{
+            if(ruleForm.username == ''){
+                ElMessage.error("邮箱不能为空！！！");
+                return false;
+            }
+            let data={
+                username:ruleForm.username,
+                module:"login",
+            }
+            getSms(data).then(response=>{
+                console.log("vscode : ",response);
+            }).catch(error=>{
+                
+            });
+        })
+
+        /**
+         * 提交表单
+         */
         const submitForm = (formName =>{
             loginForm.value.validate((valid) => {
                 if (valid) {
@@ -167,12 +198,19 @@ export default {
                 }
             });
         })
+
+        /**
+         * 重置表单
+         */
+        const resetForm = (loginForm) => {
+            loginForm.value.resetFields();
+        }
         /**
          * 生命周期
          */
         //挂载完成后
         onMounted(()=>{
-
+            
         })
         return {
             menuTab,
@@ -181,7 +219,9 @@ export default {
             rules,
             toggleMenu,
             submitForm,
-            loginForm
+            loginForm,
+            GetSms,
+            loginButtonStatus,
         }
     }
 }

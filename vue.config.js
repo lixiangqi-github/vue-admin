@@ -40,7 +40,15 @@ module.exports = defineConfig({
     port: 8080, // 访问端口
     https: false, // 编译失败时刷新页面
     hot: true, // 开启热加载
-    proxy: null, // 设置代理
+    proxy: {
+      "/api": {
+        target: "http://127.0.0.1:8012", //API服务器的地址
+        changeOrigin: true,
+        pathRewrite: {
+          "^/api": ''
+        }
+      }
+    }
   },
   pluginOptions: {}
 })

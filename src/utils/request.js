@@ -44,8 +44,8 @@ service.interceptors.response.use(function (response) {
         ElMessage.error(data.message);
         return Promise.reject(data);
     } else {
-        return response;
-        // return Promise.resolve(data);
+        // return response;
+        return Promise.resolve(data);
     }
 }, function (error) {
     // 对响应错误做点什么

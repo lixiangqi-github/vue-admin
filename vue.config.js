@@ -1,5 +1,6 @@
 const { defineConfig } = require('@vue/cli-service')
 const path = require('path');
+const resolve = (dir) => path.join(__dirname, dir);
 module.exports = defineConfig({
   transpileDependencies: true,
 
@@ -7,6 +8,15 @@ module.exports = defineConfig({
   outputDir: process.env.NODE_ENV === 'production' ? 'dist' : 'devdist',
   lintOnSave: true,
   chainWebpack: (config) => {
+    const svgRule = config.module.rule("svg");
+    svgRule.uses.clear();
+    svgRule
+      .use("svg-sprite-loader")
+      .loader("svg-sprite-loader")
+      .options({
+        symbolId: "icon-[name]",
+        include: ["./src/icons"]
+      });
   },
   configureWebpack: (config) => {
     config.resolve = { // 配置解析别名

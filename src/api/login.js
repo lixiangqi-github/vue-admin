@@ -21,3 +21,15 @@ export function Register(data) {
         data
     })
 }
+
+/**
+ * 登录
+ */
+
+export function Login(data) {
+    return service.request({
+        method: "post",
+        url: "/login",
+        data
+    })
+}

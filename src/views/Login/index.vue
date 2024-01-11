@@ -49,8 +49,9 @@
 </template>
 
 <script>
-
-import { getSms ,Register} from "@/api/login";
+import { useRouter } from 'vue-router'
+import sha1 from 'js-sha1';
+import { getSms, Register, Login } from "@/api/login";
 import { ElMessage } from "element-plus";
 import { reactive, ref, isRef, toRefs, onMounted } from 'vue';
 import { stripscript, validateEmail, validatePass, validateVCode } from '@/utils/validate';
@@ -217,22 +218,25 @@ export default {
          * 倒计时
          */
         const countDown = ((number) => {
+            if (timer.value) {
+                clearInterval(timer.value);
+            }
             let times = number;
-            timer.value = setInterval(()=>{
-                if(times === 0){
+            timer.value = setInterval(() => {
+                if (times === 0) {
                     clearInterval(timer.value);
                     updateButtonStatus({
                         status: false,
                         text: "再次获取"
                     })
-                }else{
+                } else {
                     updateButtonStatus({
                         status: true,
                         text: `倒计时${times}秒`
                     });
                 }
                 times--;
-            },1000)
+            }, 1000)
         });
 
         /**
@@ -241,27 +245,76 @@ export default {
         const submitForm = (formName => {
             loginForm.value.validate((valid) => {
                 if (valid) {
-                    let data ={
-                        username:ruleForm.username,
-                        password:ruleForm.password,
-                        code:ruleForm.code,
-                        module:"register",
+                    if (modelValue.value === "login") {
+                        login();
+                    } else {
+                        register();
                     }
-                    Register (data).then(response=>{
-                        console.log("response:",response);
-                    }).catch(error=>{
-                        loginButtonStatus.value = false;
-                        updateButtonStatus({
-                            status: false,
-                            text: "再次获取"
-                        })
-                    })
                 } else {
                     console.log('error submit!!');
                     return false;
                 }
             });
         })
+        const route = useRouter();
+        /**
+         * 登录
+         */
+        const login = (() => {
+            let loginData = {
+                username: ruleForm.username,
+                password: sha1(ruleForm.password),
+                code: ruleForm.code,
+                module: "login",
+            }
+            Login(loginData).then(res => {
+                ElMessage({
+                    message: res.message,
+                    type: 'success',
+                })
+                route.push({ name: 'Console', query: { id: '123' } });
+                toggleMenu(menuTab[0]);
+                clearCountDown();
+            }).catch(error => {
+                console.log("登录失败")
+            });
+        });
+
+        /**
+         * 注册
+         */
+        const register = (() => {
+            let registerData = {
+                username: ruleForm.username,
+                password: sha1(ruleForm.password),
+                code: ruleForm.code,
+                module: "register",
+            }
+            Register(registerData).then(response => {
+                ElMessage({
+                    message: response.message,
+                    type: 'success',
+                })
+                toggleMenu(menuTab[0]);
+                clearCountDown();
+            }).catch(error => {
+                loginButtonStatus.value = false;
+                updateButtonStatus({
+                    status: false,
+                    text: "再次获取"
+                })
+            })
+        });
+
+        /**
+         * 清除倒计时
+         */
+        const clearCountDown = (() => {
+            codeButtonStatus.status = false;
+            codeButtonStatus.text = '获取验证码';
+            //清除倒计时
+            clearInterval(timer.value);
+        });
 
         /**
          * 重置表单

@@ -1,14 +1,14 @@
 <template>
-    <div>用户列表</div>
+    <div>信息分类</div>
 </template>
 
 <script>
 export default {
-    name: 'userIndex',
+    name: 'category',
     setup(props) {
 
     }
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style scoped></style>

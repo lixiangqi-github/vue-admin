@@ -51,13 +51,16 @@
 <script>
 import { useRouter } from 'vue-router'
 import sha1 from 'js-sha1';
-import { getSms, Register, Login } from "@/api/login";
+import { getSms, Register } from "@/api/login";
 import { ElMessage } from "element-plus";
 import { reactive, ref, isRef, toRefs, onMounted } from 'vue';
 import { stripscript, validateEmail, validatePass, validateVCode } from '@/utils/validate';
+import { useStore } from 'vuex';
+
 export default {
     name: 'login',
     setup(props, context) {
+        const store = useStore();
         // setup(props,{attrs }){
         // 验证用户名
         let validateUsername = (rule, value, callback) => {
@@ -135,9 +138,9 @@ export default {
         // 表单绑定数据
         const ruleForm = reactive({
             username: 'xiangqi_007@163.com',
-            password: '',
+            password: 'Aa123456',
             repassword: '',
-            code: ''
+            code: '123456'
         });
 
         // 表单的验证
@@ -192,6 +195,7 @@ export default {
             }
             let data = {
                 username: ruleForm.username,
+                password: ruleForm.password,
                 module: modelValue.value,
             }
             updateButtonStatus({
@@ -267,7 +271,7 @@ export default {
                 code: ruleForm.code,
                 module: "login",
             }
-            Login(loginData).then(res => {
+            store.dispatch('app/login', loginData).then(res => {
                 ElMessage({
                     message: res.message,
                     type: 'success',
@@ -276,8 +280,19 @@ export default {
                 toggleMenu(menuTab[0]);
                 clearCountDown();
             }).catch(error => {
-                console.log("登录失败")
+                console.log("登录失败");
             });
+            // Login(loginData).then(res => {
+            //     ElMessage({
+            //         message: res.message,
+            //         type: 'success',
+            //     })
+            //     route.push({ name: 'Console', query: { id: '123' } });
+            //     toggleMenu(menuTab[0]);
+            //     clearCountDown();
+            // }).catch(error => {
+            //     console.log("登录失败")
+            // });
         });
 
         /**

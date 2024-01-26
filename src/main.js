@@ -6,10 +6,13 @@ import store from './store'
 import SvgIcon from '@/icons/SvgIcon'// svg component
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
+import "./router/premit";
+
 // 自定义全局组件
 import "./icons";
 // Vue.use(ElementUI);
 // Vue.use(VueCompositionApi);
+
 
 // VueElement.config.productionTip = false;
 const app = createApp(App);

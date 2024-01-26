@@ -1,15 +1,23 @@
 <template>
   <div id="main-wrap">
     <div class="main-content">
-      <div class="content"><router-view /></div>
-
+      <div class="content"><router-view />
+        {{ b }}
+      </div>
     </div>
   </div>
 </template>
 <script>
+import { useStore } from 'vuex';
 export default {
   name: 'layoutMain',
-  setup(props) { }
+  setup(props) {
+    const store = useStore();
+    const b = store.state.login.a;
+    return {
+      b,
+    }
+  }
 }
 </script>
 <style lang="scss" scoped>
@@ -54,4 +62,5 @@ export default {
   padding: 30px 30px 0 30px;
   background-color: #fff;
   @include webkit(box-sizing, border-box);
-}</style>
+}
+</style>

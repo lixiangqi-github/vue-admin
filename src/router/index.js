@@ -1,10 +1,11 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import Login from "../views/Login/index.vue";
+import Layout from '@/views/Layout';
 
 const routes = [
   {
     path: '/',
-    redirect: "login",
+    redirect: "Login",
     hidden: true,
     meta: {
       name: "主页"
@@ -12,7 +13,7 @@ const routes = [
   },
   {
     path: '/login',
-    name: 'login',
+    name: 'Login',
     hidden: true,
     meta: {
       name: "登录"
@@ -22,7 +23,7 @@ const routes = [
   {
     path: '/console',
     name: 'Console',
-    redirect: "console/index",
+    redirect: "index",
     meta: {
       name: "控制台",
       icon: 'console'
@@ -30,7 +31,7 @@ const routes = [
     component: () => import("../views/Layout/index.vue"),
     children: [
       {
-        path: "/console/index",
+        path: "/index",
         name: "Index",
         meta: {
           name: "首页"
@@ -50,7 +51,7 @@ const routes = [
     component: () => import("../views/Layout/index.vue"),
     children: [
       {
-        path: "/info/infoIndex",
+        path: "/infoIndex",
         name: "InfoIndex",
         meta: {
           name: "信息列表"
@@ -58,7 +59,7 @@ const routes = [
         component: () => import("../views/Info/index.vue")
       },
       {
-        path: "/info/infoCategory",
+        path: "/infoCategory",
         name: "InfoCategory",
         meta: {
           name: "信息分类"

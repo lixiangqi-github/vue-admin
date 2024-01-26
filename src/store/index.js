@@ -1,20 +1,11 @@
-import { createStore } from 'vuex'
+import { createStore } from 'vuex';
+
+import app from "./modules/app";
+import login from "./modules/login";
 
 export default createStore({
-  state: {
-    isCollapse: false,
-  },
-  getters: {
-    isCollapse: state => state.isCollapse
-  },
-  mutations: {
-    SET_COLLAPSE(state) {
-      state.isCollapse = !state.isCollapse;
-      sessionStorage.setItem('isCollapse', JSON.stringify(state.isCollapse));
-    },
-  },
-  actions: {
-  },
   modules: {
+    app,
+    login,
   }
 })

@@ -6,7 +6,7 @@
     <div class="pull-right">
       <div class="user-info pull-left">
         <img src="../../../assets/images/face.jpg" alt="">
-        管理员
+        {{ username }}
       </div>
       <div class="header-icon pull-left" @click="logout">
         <svg-icon iconClass="exit" className="exit" />
@@ -16,15 +16,27 @@
 </template>
 <script>
 import { useStore } from 'vuex';
+import { computed, Computed } from 'vue';
+import { useRouter } from 'vue-router';
 export default {
   name: 'layoutHeader',
   setup(props, context) {
     const store = useStore();
+    const username = computed(() => store.state.app.username);
+    const router = useRouter();
     const navMenuState = () => {
-      store.commit('SET_COLLAPSE');
+      store.commit('app/SET_COLLAPSE');
+    }
+    // 退出
+    const logout = () => {
+      store.dispatch('app/logout').then(() => {
+        router.push({ name: 'Login' })
+      });
     }
     return {
       navMenuState,
+      username,
+      logout,
     }
   }
 }

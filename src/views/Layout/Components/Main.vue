@@ -2,7 +2,6 @@
   <div id="main-wrap">
     <div class="main-content">
       <div class="content"><router-view />
-        {{ b }}
       </div>
     </div>
   </div>
@@ -13,9 +12,7 @@ export default {
   name: 'layoutMain',
   setup(props) {
     const store = useStore();
-    const b = store.state.login.a;
     return {
-      b,
     }
   }
 }

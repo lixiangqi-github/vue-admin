@@ -61,7 +61,7 @@ div.el-table {
     padding: 30px 47px !important;
 }
 
-.el-dialog__footer {
+.dialog-footer {
     text-align: center !important;
     padding-bottom: 50px !important;
 
@@ -76,8 +76,8 @@ div.el-form-item {
 }
 
 /* from 样式 */
-.el-form {
-    .el-form-item:last-child {
-        margin-bottom: 0 !important;
-    }
-}
+// .el-form {
+//     .el-form-item:last-child {
+//         margin-bottom: 0 !important;
+//     }
+// }

@@ -27,7 +27,7 @@
                     <label for="">关键字：&nbsp;&nbsp;</label>
                     <div class="wrap-content">
                         <el-select v-model="search_key">
-                            <el-option v-for="item in searchOption" :key="item.value" :value="item.value"
+                            <el-option v-for="item in search_option" :key="item.value" :value="item.value"
                                 :label="item.label">
                             </el-option>
                         </el-select>
@@ -38,26 +38,26 @@
                 <el-input v-model="search_keyWork" placeholder="请输入内容：" style="width: 100%;" />
             </el-col>
             <el-col :span="2">
-                <el-button type="danger" style="width: 100%;" @click="getList">搜索</el-button>
+                <el-button type="danger" style="width: 100%;">搜索</el-button>
             </el-col>
             <el-col :span="3">&nbsp;</el-col>
             <el-col :span="2">
-                <el-button type="danger" class="pull-right" style="width: 100%;">新增</el-button>
+                <el-button type="danger" class="pull-right" @click="open()" style="width: 100%;">新增</el-button>
             </el-col>
         </el-row>
 
         <!-- 表格数据 -->
         <div class="black-space-30"></div>
-        <el-table :data="tableData" style="width: 100%" border>
+        <el-table :data="table_data" style="width: 100%" border>
             <el-table-column type="selection" width="45"></el-table-column>
             <el-table-column prop="title" label="标题" width="750"></el-table-column>
-            <el-table-column prop="categoryId" label="类型" width="130" :formatter="toCategory"></el-table-column>
-            <el-table-column prop="createDate" label="日期" width="237" :formatter="toData"></el-table-column>
+            <el-table-column prop="categoryId" label="类型" width="130"></el-table-column>
+            <el-table-column prop="createDate" label="日期" width="237"></el-table-column>
             <el-table-column prop="user" label="管理员" width="115"></el-table-column>
             <el-table-column label="操作">
-                <template #default="scope">
-                    <el-button type="danger" size="mini" class="hiden-button">删除</el-button>
-                    <el-button type="success" size="mini" class="hiden-button">编辑</el-button>
+                <template #default>
+                    <el-button type="danger" size="default" @click="deleteItem()" class="hiden-button">删除</el-button>
+                    <el-button type="success" size="default" @click="open()" class="hiden-button">编辑</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -65,7 +65,7 @@
         <!--底部分页-->
         <el-row>
             <el-col :span="12">
-                <el-button size="medium" @click="deleteAll">批量删除</el-button>
+                <el-button size="default" @click="deleteAll">批量删除</el-button>
             </el-col>
             <el-col :span="12">
                 <el-pagination class="pull-right" background @size-change="handleSizeChange" :current-page="4"
@@ -74,16 +74,30 @@
                 </el-pagination>
             </el-col>
         </el-row>
+        <!--新增弹窗-->
+        <!-- <DialogInfo v-model:flag="dialog_info" @close="closeDialog" /> -->
+        <DialogInfo v-model:flag="dialog_info" />
     </div>
 </template>
 
 <script>
 import { reactive, ref } from 'vue';
+import DialogInfo from "./dialog/info.vue";
+import { global } from "@/utils/global_V3.0";
+import { ElMessage, ElMessageBox } from 'element-plus'
 export default {
     name: 'infoIndex',
+    components: { DialogInfo },
     setup(props) {
-        const category_value = ref('');
-        const date_value = ref('');
+        const dialog_info = ref(false);   // 弹出窗口
+        const search_key = ref('id');       // 关键字
+        const category_value = ref(''); // 类型
+        const date_value = ref(''); // 日期
+        const search_keyWork = ref('');     // 请输入内容
+        const { str: aaa, confirm } = global();
+        const deleteInfoId = ref('');
+
+        // 类型用
         const options = reactive(
             [
                 {
@@ -102,7 +116,7 @@ export default {
         );
 
         //表格数据
-        const tableData = reactive(
+        const table_data = reactive(
             [
                 {
                     title: '2016-05-03',
@@ -113,35 +127,79 @@ export default {
             ]
         );
 
-        // 搜索关键字
-        const searchOption = reactive([
+        // 关键字
+        const search_option = reactive([
             { value: "id", label: "ID" },
             { value: "title", label: "标题" }
         ]);
-        const search_key = ref('id');
-        const search_keyWork = ref('');
 
         /**
          * vue2.0 methods
          */
-        const handleSizeChange = (val) => {
+        const handleSizeChange = (val) => {     // 分页
             page.pageSize = val
         }
-        const handleCurrentChange = (val) => {
+        const handleCurrentChange = (val) => {  // 分页
             page.pageNumber = val
-            getList()
+            // getList()
+        }
+        // const closeDialog = () => {
+        //     dialog_info.value = false;
+        // }
+        const open = () => {
+            dialog_info.value = true;
+        }
+        /**
+         * 删除数据
+         */
+        const deleteItem = (id) => {
+            deleteInfoId.value = [id];
+            confirm({
+                content: "确认删除当前信息，确认后将无法恢复！！",
+                tip: "警告",
+                fn: confirmDelete
+            })
         }
 
+        const confirmDelete = (value) => {
+            DeleteInfo({ id: deleteInfoId.value }).then(response => {
+                deleteInfoId.value = '';
+                getList()
+            })
+        }
+
+        const deleteAll = () => {
+            if (!deleteInfoId.value || deleteInfoId.value.length == 0) {
+                ElMessage({
+                    message: "请选择要删除的数据！！",
+                    type: "error"
+                })
+                return false;
+            }
+            confirm({
+                content: "确认删除选择的数据，确认后将无法恢复！",
+                tip: "警告",
+                fn: confirmDelete
+            })
+        }
         return {
-            options,
-            category_value,
+            // ref
             date_value,
-            searchOption,
             search_key,
             search_keyWork,
-            tableData,
+            category_value,
+            dialog_info,
+            // reactive
+            table_data,
+            options,
+            search_option,
+            // vue2.0 methods
             handleSizeChange,
             handleCurrentChange,
+            // closeDialog,
+            open,
+            deleteItem,
+            deleteAll,
         }
     }
 }

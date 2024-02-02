@@ -84,7 +84,7 @@
 import { reactive, ref } from 'vue';
 import DialogInfo from "./dialog/info.vue";
 import { global } from "@/utils/global_V3.0";
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage } from 'element-plus';
 export default {
     name: 'infoIndex',
     components: { DialogInfo },

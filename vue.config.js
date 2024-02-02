@@ -52,7 +52,8 @@ module.exports = defineConfig({
     hot: true, // 开启热加载
     proxy: {
       "/api": {
-        target: "http://127.0.0.1:8012/token", //API服务器的地址
+        // target: "http://127.0.0.1:8012/token", //API服务器的地址
+        target: "http://127.0.0.1:8012", //API服务器的地址
         changeOrigin: true, //允许跨域
         pathRewrite: {
           "^/api": ''

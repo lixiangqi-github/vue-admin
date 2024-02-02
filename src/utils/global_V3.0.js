@@ -1,5 +1,5 @@
 import { ElMessageBox } from 'element-plus';
-import { ref } from '@vue/composition-api';
+import { ref } from 'vue';
 
 export function global() {
     const str = ref('');

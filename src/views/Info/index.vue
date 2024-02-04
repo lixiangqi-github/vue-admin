@@ -3,11 +3,11 @@
         <el-row :gutter="14">
             <el-col :span="4">
                 <div class="label-wrap category">
-                    <label for="">类型：</label>
+                    <label for="">类别：</label>
                     <div class="wrap-content">
                         <el-select v-model="category_value" placeholder="请选择" style="width: 100%;">
-                            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"
-                                :disabled="item.disabled" />
+                            <el-option v-for="item in options.category" :key="item.id" :label="item.category_name"
+                                :value="item.id" :disabled="item.disabled" />
                         </el-select>
                     </div>
                 </div>
@@ -81,7 +81,8 @@
 </template>
 
 <script>
-import { reactive, ref } from 'vue';
+import { GetCategory } from '@/api/news';
+import { onMounted, reactive, ref } from 'vue';
 import DialogInfo from "./dialog/info.vue";
 import { global } from "@/utils/global_V3.0";
 import { ElMessage } from 'element-plus';
@@ -98,22 +99,23 @@ export default {
         const deleteInfoId = ref('');
 
         // 类型用
-        const options = reactive(
-            [
-                {
-                    value: '1',
-                    label: '国际信息',
-                },
-                {
-                    value: '2',
-                    label: '国内信息',
-                },
-                {
-                    value: '3',
-                    label: '行业信息',
-                }
-            ]
-        );
+        const options = reactive({
+            category: [],
+        });
+        // [
+        //     {
+        //         value: '1',
+        //         label: '国际信息',
+        //     },
+        //     {
+        //         value: '2',
+        //         label: '国内信息',
+        //     },
+        //     {
+        //         value: '3',
+        //         label: '行业信息',
+        //     }
+        // ]
 
         //表格数据
         const table_data = reactive(
@@ -182,6 +184,16 @@ export default {
                 fn: confirmDelete
             })
         }
+        const getCategory = () => {
+            GetCategory({}).then(response => {
+                options.category = response.category;
+            }).catch(error => {
+
+            });
+        }
+        onMounted(() => {
+            getCategory();
+        })
         return {
             // ref
             date_value,
